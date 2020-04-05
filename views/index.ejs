@@ -5,7 +5,22 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <form action="/auth/join" method="POST">
+      <p>
+        <strong>아이디</strong>
+        <input type="text" name="email" value="email">
+      </p>
+      <p>
+        <strong>비밀번호</strong>
+        <input type="password" name="password" value="password">
+      </p>
+      <p>
+        <strong>Nickname</strong>
+        <input type="text" name="nickname" value="password">
+      </p>
+      <p>
+        <input type="submit" value="제출">
+      </p>
+    </form>
   </body>
 </html>
