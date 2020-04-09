@@ -16,45 +16,63 @@ var isEmpty = function (value) {
 };
 
 router.post('/login', function(req, res, next) {
-  passport.authenticate('local', {session : false}, async (authError, user, info) => {
-    if(authError){
-      console.log(authError);
-      console.error(authError);
-      return next(authError);
-    }
+  try{
+    passport.authenticate('local', {session : false}, async (authError, user, info) => {
+      if(authError){
+        console.log(authError);
+        console.error(authError);
+        return next(authError);
+      }
 
-    try{
-      const token = jwt.sign({
-        id : user.id,
-        nickname : user.nickname,
-        status : user.status,
-      },
-      process.env.JWT_SECRET,
-      {
-          expiresIn : '60m',
-          issuer : 'comeOn',
-      });
-      
-      const refreshToken = jwt.sign({
-        id : user.id,
+      if (!user) {
+        console.log(info.message);
+        return res.json({
+          code:400,
+          message:info.message
+        });
+      }
+
+      try{
+        const token = jwt.sign({
+          id : user.id,
+          nickname : user.nickname,
+          status : user.status,
         },
         process.env.JWT_SECRET,
         {
-            expiresIn : '1,440m',
+            expiresIn : '60m',
             issuer : 'comeOn',
         });
-
-        return res.status(200).json({
-          code : 200,
-          message : '토큰이 발급되었습니다.',
-          token,
-          refreshToken,
+        
+        const refreshToken = jwt.sign({
+          id : user.id,
+          },
+          process.env.JWT_SECRET,
+          {
+              expiresIn : '1440m',
+              issuer : 'comeOn',
+          });
+  
+          return res.status(200).json({
+            code : 200,
+            message : '토큰이 발급되었습니다.',
+            token,
+            refreshToken,
+          }).send();
+      }
+      catch(err){
+        console.log(err);
+        return res.status(400).json({
+          code:400,
+          message:"에러입니다."
         }).send();
-    }
-    catch{
-
-    }
-  });
+      }
+    })(req, res, next); 
+  }
+  catch(err){
+    console.log(err);
+    res.send("에러입니다.");
+  }
 });
 
 router.post('/join',async function(req, res, next) {
