@@ -4,6 +4,8 @@ var {User} = require('../models');
 var bcrypt = require('bcryptjs');
 var crypto = require('crypto'); 
 const jwt = require('jsonwebtoken');
+var client = require('../redis_config');
+var passport = require('passport');
 
 var isEmpty = function (value) {
   if (value == "" || value == null || value == undefined || (value != null && typeof value == "object" && !Object.keys(value).length)) {
@@ -13,29 +15,44 @@ var isEmpty = function (value) {
   }
 };
 
-/* GET users listing. */
-router.get('/login', function(req, res, next) {
-  var {email,password} = req.body;
-  email='wlsdn110@gmail.com';
-  password='root';
-  User.findOne({
-    where:{email:email}
-  })
-  .then(result=>{
-    if(isEmpty(result)){
-      res.json({
-        code:400,
-        message:"Email 또는 비밀번호를 확인해주세요."
+router.post('/login', function(req, res, next) {
+  passport.authenticate('local', {session : false}, async (authError, user, info) => {
+    if(authError){
+      console.log(authError);
+      console.error(authError);
+      return next(authError);
+    }
+
+    try{
+      const token = jwt.sign({
+        id : user.id,
+        nickname : user.nickname,
+        status : user.status,
+      },
+      process.env.JWT_SECRET,
+      {
+          expiresIn : '60m',
+          issuer : 'comeOn',
       });
-    }else{
-      let hashpassword=crypto.createHash('sha512').update(password+result.salt).digest('base64');
-      console.log(hashpassword==result.password);
-      if(hashpassword==result.password){
-        token=jwt({
-          
-        })
-        res.send('login');
-      }
+      
+      const refreshToken = jwt.sign({
+        id : user.id,
+        },
+        process.env.JWT_SECRET,
+        {
+            expiresIn : '1,440m',
+            issuer : 'comeOn',
+        });
+
+        return res.status(200).json({
+          code : 200,
+          message : '토큰이 발급되었습니다.',
+          token,
+          refreshToken,
+        }).send();
+    }
+    catch{
+
     }
   });
 });

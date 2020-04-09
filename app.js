@@ -7,8 +7,7 @@ var {sequelize} = require('./models');
 var passport = require('passport');
 var flash = require('connect-flash');
 //const passportConfig = require('./passport');
-require('dotenv');
-
+require('dotenv').config();
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
 
