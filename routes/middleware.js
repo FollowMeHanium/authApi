@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const refreshToken = require('../redis_config')
+const refreshToken = require('../redis_config');
 
 exports.verifyToken = (req, res, next) => {
     try {
