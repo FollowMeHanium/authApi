@@ -1,26 +1,30 @@
-{
-  "development": {
+require('dotenv').config();
+const env = process.env
+
+const development ={
     "username": "root",
-    "password": "kwonjinwoo",
+    "password": env.DB_PASSWORD,
     "database": "comeon_db",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "operatorsAliases": false
-  },
-  "test": {
+};
+const test = {
     "username": "root",
-    "password": null,
+    "password": process.env.DB_PASSWORD,
     "database": "database_test",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "operatorsAliases": false
-  },
-  "production": {
+};
+
+const production = {
     "username": "root",
-    "password": null,
+    "password": process.env.DB_PASSWORD,
     "database": "database_production",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "operatorsAliases": false
-  }
-}
+};
+
+module.exports={development,production,test};

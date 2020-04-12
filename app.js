@@ -5,10 +5,11 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var {sequelize} = require('./models');
 var passport = require('passport');
+var bcrypt = require('bcryptjs');
+const passportConfig = require('./passport');
 var flash = require('connect-flash');
 //const passportConfig = require('./passport');
-require('dotenv');
-
+require('dotenv').config();
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
 
@@ -26,7 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash());
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
-
+passportConfig(passport);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
